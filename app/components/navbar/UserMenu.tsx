@@ -4,7 +4,17 @@ import Avtar from "../Avtar";
 import { useCallback, useState } from "react";
 import MenuItem from "./MenuItem";
 import useRegisterModal from "@/app/hooks/useRegisterModal";
-const UserMenu = () => {
+import useLoginModal from "@/app/hooks/useLoginModal";
+
+import { signOut } from "next-auth/react";
+import { SafeUser } from "@/app/types";
+
+interface UserMenuProps {
+  currentUser?: SafeUser | null;
+}
+
+const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
+  const loginModal = useLoginModal();
   const registerModal = useRegisterModal();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -31,7 +41,7 @@ const UserMenu = () => {
           >
             <AiOutlineMenu />
             <div className="hidden md:block">
-              <Avtar />
+              <Avtar src={currentUser?.image} />
             </div>
           </div>
         </div>
@@ -42,10 +52,22 @@ const UserMenu = () => {
              "
           >
             <div className="flex flex-col cursor-pointer">
-              <>
-                <MenuItem onClick={() => {}} label="Login" />
-                <MenuItem onClick={registerModal.onOpen} label="Sign Up" />
-              </>
+              {currentUser ? (
+                <>
+                  <MenuItem label="My trips" onClick={() => {}} />
+                  <MenuItem label="My favorites" onClick={() => {}} />
+                  <MenuItem label="My reservations" onClick={() => {}} />
+                  <MenuItem label="My properties" onClick={() => {}} />
+                  <MenuItem label="Airbnb your home" onClick={() => {}} />
+                  <hr />
+                  <MenuItem label="Logout" onClick={() => signOut()} />
+                </>
+              ) : (
+                <>
+                  <MenuItem label="Login" onClick={loginModal.onOpen} />
+                  <MenuItem label="Sign up" onClick={registerModal.onOpen} />
+                </>
+              )}
             </div>
           </div>
         )}
